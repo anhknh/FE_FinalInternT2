@@ -1,27 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="common-layout">
+    <el-container>
+      <el-aside width="240px">
+        <side-bar></side-bar>
+      </el-aside>
+      <el-container>
+        <el-header style="position: fixed; width: 100%; z-index: 100;">
+          <header-page></header-page>
+        </el-header>
+        <el-main style="padding: 80px 25px 0; height: 100vh">
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+<script lang="ts" setup>
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-});
+
+import SideBar from "@/components/layout/SideBar.vue";
+import HeaderPage from "@/components/layout/HeaderPage.vue";
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.el-header {
+  --el-header-height : 56px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #ffffff;
+}
+
+.el-main {
+  background-color: #ebeef5;
 }
 </style>
