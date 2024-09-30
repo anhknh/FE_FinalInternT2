@@ -211,7 +211,7 @@ onUnmounted(() => {
         <template #default="scope">
          <el-image v-if="scope.row.urlImage != null"
                    style="width: 50px; height: 50px"
-                   :src=" 'http://192.168.1.2:8081'+scope.row.urlImage" :fit="'cover'">
+                   :src="scope.row.urlImage" :fit="'cover'">
          </el-image>
           <el-image v-else style="width: 50px; height: 50px" src="imgError.png" :fit="'cover'"></el-image>
         </template>

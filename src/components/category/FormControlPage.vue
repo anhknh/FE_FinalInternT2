@@ -46,7 +46,7 @@ const callAPIGetDetail = async (id: any) => {
     });
     formData.value = response.data;
     if (response.data.urlImage != null) {
-      imageUrl.value = "http://192.168.1.2:8081" + response.data.urlImage;
+      imageUrl.value = response.data.urlImage;
     }
   } catch (error: any) {
     NotificationCustom.error(error.response.data, t('error'));

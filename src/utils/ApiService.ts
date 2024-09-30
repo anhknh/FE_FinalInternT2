@@ -5,7 +5,7 @@ import { Composer } from 'vue-i18n'; // Thêm kiểu Composer để khai báo t
 
 class ApiService {
     private axiosInstance: AxiosInstance;
-    private static readonly BASE_URL: string = 'http://192.168.1.2:8081';
+    private static readonly BASE_URL: string = ' http://192.168.1.10:8081';
     private static readonly TIMEOUT: number = 5000; // Thời gian timeout (ms)
     private t: Composer['t']; // Khai báo hàm t với kiểu đúng
 
