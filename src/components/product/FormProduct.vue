@@ -7,6 +7,7 @@ import {Product} from "@/components/product/Product";
 import ApiService from "@/utils/ApiService";
 import {Category} from "@/components/category/Category";
 import NotificationCustom from "@/utils/NotificationCustom";
+
 import {
   validateCode,
   validateDescription,
@@ -16,7 +17,20 @@ import {
 } from "@/utils/Validation";
 import {eventBus} from "@/utils/EventBus";
 import {useI18n} from "vue-i18n";
+import {useDebounceFn} from "@vueuse/core";
+import eVI from 'element-plus/es/locale/lang/vi'
+import eEV from 'element-plus/es/locale/lang/en'
 const { t, locale } = useI18n();
+const language = ref()
+language.value = localStorage.getItem('language');
+const isLang = ref()
+isLang.value = language.value === "en" ? eEV : eVI;
+
+watch(locale, () => {
+  language.value = localStorage.getItem('language');
+  isLang.value = language.value === "en" ? eEV : eVI;
+})
+
 
 const textHeader = ref();
 const ruleFormRef = ref<FormInstance>()
@@ -30,7 +44,6 @@ const props = defineProps({
   id: Number
 })
 
-const value = ref<number[]>([]);
 const options = ref<Array<{ label: string; value: number }>>([]);
 
 
@@ -75,7 +88,7 @@ const callAPIGetDetail = async (id: any) => {
       }
     });
     formData.value = response.data;
-    value.value = JSON.parse(response.data.categoryId);
+    formData.value.categoryCode = JSON.parse(response.data.categoryId);
     if (response.data.urlImage != null) {
       imageUrl.value = response.data.urlImage;
     }
@@ -140,12 +153,46 @@ const beforeAvatarUpload = (file: { raw: File }) => {
   handleFileChange(file.raw);
 };
 
+const validateCategory = (t: (key: string) => string) => {
+  return useDebounceFn(
+      (rule: any, value: string[], callback: (error?: Error) => void): void => {
+        console.log(value)
+        if (!value || value.length === 0) {
+          return callback(new Error(t('validateCategoryRequired')));
+        }
+        callback();
+      },
+      300
+  );
+};
+
+
 const rules = reactive<FormRules<typeof formData>>({
-  name: [{validator: validateName(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  productCode: [{validator: validateCode(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  description: [{validator: validateDescription(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  price: [{validator: validatePrice(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  quantity: [{validator: validateQuantity(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}]
+  name: [
+    { required: true, message: t('validateName'), trigger: ["change"] },
+    {validator: validateName(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ],
+  productCode: [
+    { required: true, message: t('validateCode'), trigger: ["change"] },
+      {validator: validateCode(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ],
+  description: [
+    { required: true, message: t('validateDescription'), trigger: ["change"] },
+      {validator: validateDescription(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ],
+  price: [
+    { required: true, message: t('validatePrice'), trigger: ["change"] },
+      {validator: validatePrice(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ],
+  quantity: [
+    { required: true, message: t('validateQuantity'), trigger: ["change"] },
+      {validator: validateQuantity(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ],
+  categoryCode: [
+      { required: true, message: t('validateCategoryRequired'), trigger: ["change"] },
+    {validator: validateCategory(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}
+  ]
+
 })
 
 
@@ -160,7 +207,7 @@ const submitForm = (formEl: any) => {
       productData.append("description", formData.value.description);
       productData.append("price", formData.value.price +"");
       productData.append("quantity", formData.value.quantity +"");
-      value.value.forEach(categoryId => {
+      formData.value.categoryCode.forEach(categoryId => {
         productData.append("categoryIds", categoryId.toString()); // Thêm từng phần tử
       });
       if (selectedFile) {
@@ -308,19 +355,21 @@ onBeforeUnmount(() => {
             <el-input v-model="formData.description"/>
           </el-form-item>
           <el-form-item :label="$t('fieldCategory')" prop="categoryCode">
-            <el-select-v2
-                v-model="value"
-                filterable
-                :options="options"
-                :placeholder="$t('placeholderSelectedCATEGORY')"
-                style="width: 100%"
-                multiple
-                :virtual-scroll="true"
-            >
-            <template #default="{ item }">
-              <span style="margin-right: 8px">{{ item.label }}</span>
-            </template>
-            </el-select-v2>
+            <el-config-provider :locale="isLang">
+              <el-select-v2
+                  v-model="formData.categoryCode"
+                  filterable
+                  :options="options"
+                  :placeholder="$t('placeholderSelectedCATEGORY')"
+                  style="width: 100%"
+                  multiple
+                  :virtual-scroll="true"
+              >
+                <template #default="{ item }">
+                  <span style="margin-right: 8px">{{ item.label }}</span>
+                </template>
+              </el-select-v2>
+            </el-config-provider>
           </el-form-item>
           <div v-if="checkMode != 'add'">
             <el-form-item :label="$t('fieldCreateDateCategory')" prop="createdDate">

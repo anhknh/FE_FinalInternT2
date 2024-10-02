@@ -13,7 +13,7 @@ interface Product {
     modifiedDate: string;
     createdBy: string;
     modifiedBy: string;
-    categoryCode?: string[]
+    categoryCode: number[]
 }
 
 interface ProductResponse {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import {Bell} from "@element-plus/icons-vue";
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -10,6 +9,7 @@ const language = ref(localStorage.getItem('language') || 'en');
 
 const changeLanguage = () => {
   locale.value = currentLanguage.value;
+  console.log(currentLanguage.value)
   localStorage.setItem('language', currentLanguage.value);
 };
 
@@ -18,13 +18,12 @@ currentLanguage.value = localStorage.getItem('language') || 'en';
 
 <template>
 <div class="header">
-  <div style="font-weight: bold">{{ $t('welcomeMessage')}}</div>
   <div style="display:flex; align-items: flex-end">
     <div style="display: flex; align-items: center;">
-      <select v-model="currentLanguage" @change="changeLanguage">
-        <option value="en">English</option>
-        <option value="vi">Tiếng Việt</option>
-      </select>
+      <el-radio-group v-model="currentLanguage" @change="changeLanguage">
+        <el-radio-button label="EN" value="en" />
+        <el-radio-button label="VI" value="vi" />
+      </el-radio-group>
     </div>
   </div>
 </div>

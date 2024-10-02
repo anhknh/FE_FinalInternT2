@@ -77,6 +77,7 @@ const callAPIDelete = async (id: any) => {
     NotificationCustom.success(t('deleteSuccess'), t('success'));
   } catch (error: any) {
     NotificationCustom.error(error.response.data, t('error'));
+    fetchData()
   }
 }
 
@@ -84,8 +85,8 @@ const downloadFile = async () => {
   try {
     const response = await ApiService.get('/export-excel', {
       params: {
-        name: dataSearch.name.trim(),
-        categoryCode: dataSearch.categoryCode.trim(),
+        name: encodeURIComponent(dataSearch.name.trim()),
+        categoryCode: encodeURIComponent(dataSearch.categoryCode.trim()),
         startDate: dataSearch.startDate,
         endDate: dataSearch.endDate,
       },
@@ -121,11 +122,11 @@ const conFirmDelete = (check: any) => {
 const debouncedSearch = useDebounceFn(fetchData, 700);
 
 const isValidCategoryCode = (categoryCode: string) => {
-  return /^[a-zA-Z0-9 ]+$/.test(categoryCode);
+  return /^[a-zA-Z0-9 ]*$/.test(categoryCode.trim());
 }
 
 const isValidCategoryName = (name: string) => {
-  return /^[a-zA-Z0-9 ]+$/.test(name);
+  return /^[a-zA-Z0-9 ]*$/.test(name.trim());
 }
 
 const validateDates = () => {
@@ -150,6 +151,7 @@ watch(
         debouncedSearch();
       } else {
         tableData.value = [];
+        totalItems.value = 0;
       }
     }
 );
@@ -175,79 +177,83 @@ onUnmounted(() => {
 <template>
   <div class="form-search">
     <div style="display: inline-block;">
-      <el-form :model="dataSearch">
-        <el-input v-model="dataSearch.categoryCode" style="width: 270px ; margin:4px 8px 4px 0"
-                  :placeholder="$t('placeholderSearchCodeCATEGORY')"  maxlength="255" :prefix-icon="Search"/>
-        <el-input v-model="dataSearch.name" style="width: 270px;  margin:4px 8px 4px 0"
-                  :placeholder="$t('placeholderSearchNameCATEGORY')"  maxlength="255" :prefix-icon="Search"/>
-        <el-date-picker v-model="dataSearch.startDate" style="width: 190px;" type="date"
-                        format="DD-MM-YYYY"
-                        value-format="DD-MM-YYYY"
-                        :placeholder="$t('placeholderSearchCrtStCATEGORY')" :default-time="defaultTime"/>
-        -
-        <el-date-picker v-model="dataSearch.endDate" style="width: 190px;  margin:4px 12px 4px 0" type="date"
-                        format="DD-MM-YYYY"
-                        value-format="DD-MM-YYYY"
-                        :placeholder="$t('placeholderSearchCrtEdCATEGORY')" :default-time="defaultTime"/>
-        <el-button  @click="downloadFile" type="primary">
-          <el-icon style=" margin:4px 8px 4px 0"><Download /></el-icon>
-          {{$t('btnExportExcel')}}
-        </el-button>
-        <el-button @click="openTab('add', 0)" type="primary">
-          <el-icon style=" margin:4px 8px 4px 0"><Plus /></el-icon>
-          {{$t('btnAdd')}}
-        </el-button>
-      </el-form>
+      <el-config-provider :locale="isLang">
+        <el-form :model="dataSearch">
+          <el-input v-model="dataSearch.categoryCode" style="width: 270px ; margin:4px 8px 4px 0"
+                    :placeholder="$t('placeholderSearchCodeCATEGORY')"  maxlength="255" :prefix-icon="Search"/>
+          <el-input v-model="dataSearch.name" style="width: 270px;  margin:4px 8px 4px 0"
+                    :placeholder="$t('placeholderSearchNameCATEGORY')"  maxlength="255" :prefix-icon="Search"/>
+          <el-date-picker v-model="dataSearch.startDate" style="width: 190px;" type="date"
+                          format="DD-MM-YYYY"
+                          value-format="DD-MM-YYYY"
+                          :placeholder="$t('placeholderSearchCrtStCATEGORY')" :default-time="defaultTime"/>
+          -
+          <el-date-picker v-model="dataSearch.endDate" style="width: 190px;  margin:4px 12px 4px 0" type="date"
+                          format="DD-MM-YYYY"
+                          value-format="DD-MM-YYYY"
+                          :placeholder="$t('placeholderSearchCrtEdCATEGORY')" :default-time="defaultTime"/>
+          <el-button :disabled="totalItems <= 0"  @click="downloadFile" type="primary">
+            <el-icon style=" margin:4px 8px 4px 0"><Download /></el-icon>
+            {{$t('btnExportExcel')}}
+          </el-button>
+          <el-button @click="openTab('add', 0)" type="primary">
+            <el-icon style=" margin:4px 8px 4px 0"><Plus /></el-icon>
+            {{$t('btnAdd')}}
+          </el-button>
+        </el-form>
+      </el-config-provider>
     </div>
   </div>
   <div class="page">
-    <el-table border :data="tableData" style="width: 100%; height: 410px">
-      <el-table-column prop="STT" label="STT" width="60" align="center" >
-        <template #default="scope">
-          {{ ((currentPage ?? 1) - 1) * (pageSize ?? 10) + scope.$index + 1 }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="image" :label="$t('fieldImageCategory')" width="150" align="center">
-        <template #default="scope">
-         <el-image v-if="scope.row.urlImage != null"
-                   style="width: 50px; height: 50px"
-                   :src="scope.row.urlImage" :fit="'cover'">
-         </el-image>
-          <el-image v-else style="width: 50px; height: 50px" src="imgError.png" :fit="'cover'"></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column prop="categoryCode" :label="$t('fieldCodeCategory')" width="150" />
-      <el-table-column prop="name" :label="$t('fieldNameCategory')" width="120" />
-      <el-table-column prop="description" :label="$t('fieldDescriptionCategory')" width="220" />
-      <el-table-column prop="createdDate" :label="$t('fieldCreateDateCategory')" width="180" align="center" />
-      <el-table-column prop="status" align="center" :label="$t('fieldStatusCategory')" width="120">
-        <template #default="scope">
-          <el-tag v-if="scope.row.status == 'ACTIVE'" type="success">{{$t('active')}}</el-tag>
-          <el-tag v-else type="danger">{{$t('inactive')}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" :label="$t('fieldOperationsCategory')" min-width="120" align="center">
-        <template #default="scope">
-          <el-tooltip :content="$t('viewDetails')" placement="top">
-<!--            <el-button link type="primary" @click="redirectFormDetail(scope.row.id)">-->
-            <el-button link type="primary" @click="openTab('view', scope.row.id)">
-              <el-icon style="font-size: 18px"><View /></el-icon>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip :content="$t('update')" placement="top">
-<!--            <el-button link type="primary" @click="redirectFormUpdate(scope.row.id)">-->
-            <el-button link type="primary" @click="openTab('update', scope.row.id)">
-              <el-icon style="font-size: 18px"><Edit /></el-icon>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip :content="$t('delete')" placement="top">
-            <el-button @click="deleteCategory(scope.row.id)" link type="danger">
-              <el-icon style="font-size: 18px"><Delete /></el-icon>
-            </el-button>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-config-provider :locale="isLang">
+      <el-table border :data="tableData" style="width: 100%; height: 410px">
+        <el-table-column prop="STT" label="STT" width="60" align="center" >
+          <template #default="scope">
+            {{ ((currentPage ?? 1) - 1) * (pageSize ?? 10) + scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="image" :label="$t('fieldImageCategory')" width="150" align="center">
+          <template #default="scope">
+            <el-image v-if="scope.row.urlImage != null"
+                      style="width: 50px; height: 50px"
+                      :src="scope.row.urlImage" :fit="'cover'">
+            </el-image>
+            <el-image v-else style="width: 50px; height: 50px" src="imgError.png" :fit="'cover'"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="categoryCode" :label="$t('fieldCodeCategory')" width="150" />
+        <el-table-column prop="name" :label="$t('fieldNameCategory')" width="120" />
+        <el-table-column prop="description" :label="$t('fieldDescriptionCategory')" width="220" />
+        <el-table-column prop="createdDate" :label="$t('fieldCreateDateCategory')" width="180" align="center" />
+        <el-table-column prop="status" align="center" :label="$t('fieldStatusCategory')" width="120">
+          <template #default="scope">
+            <el-tag v-if="scope.row.status == 'ACTIVE'" type="success">{{$t('active')}}</el-tag>
+            <el-tag v-else type="danger">{{$t('inactive')}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" :label="$t('fieldOperationsCategory')" min-width="120" align="center">
+          <template #default="scope">
+            <el-tooltip :content="$t('viewDetails')" placement="top">
+              <!--            <el-button link type="primary" @click="redirectFormDetail(scope.row.id)">-->
+              <el-button link type="primary" @click="openTab('view', scope.row.id)">
+                <el-icon style="font-size: 18px"><View /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('update')" placement="top">
+              <!--            <el-button link type="primary" @click="redirectFormUpdate(scope.row.id)">-->
+              <el-button link type="primary" @click="openTab('update', scope.row.id)">
+                <el-icon style="font-size: 18px"><Edit /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('delete')" placement="top">
+              <el-button @click="deleteCategory(scope.row.id)" link type="danger">
+                <el-icon style="font-size: 18px"><Delete /></el-icon>
+              </el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-config-provider>
     <div style="margin: 20px 10px; display: flex;justify-content: flex-end; align-items: center">
       <div class="demo-pagination-block">
         <el-config-provider :locale="isLang">

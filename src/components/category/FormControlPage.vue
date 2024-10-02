@@ -84,11 +84,9 @@ const callAPIUpdateCategory = async (data: FormData) => {
 }
 
 const mode = () => {
-  // if (route.params.id === 'add') {
   if (props.mode === 'add') {
     textHeader.value = t('titleFormAdd');
     checkMode.value = "add"
-    // } else if (route.query.mode === 'update') {
   } else if (props.mode === 'update') {
     textHeader.value = t('titleFormUpdate');
     checkMode.value = "update"
@@ -125,13 +123,20 @@ const beforeAvatarUpload = (file: { raw: File }) => {
 
 
 const rules = reactive<FormRules<typeof formData>>({
-  name: [{validator: validateName(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  categoryCode: [{validator: validateCode(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"]}],
-  description: [{
-    validator: validateDescription(t) as (rule: any, value: any, callback: any) => void,
-    trigger: ["change"]
-  }]
-})
+  name: [
+    { required: true, message: t('validateName'), trigger: ["change"] },
+    { validator: validateName(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"] }
+  ],
+  categoryCode: [
+    { required: true, message: t('validateCode'), trigger: ["change"] },
+    { validator: validateCode(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"] }
+  ],
+  description: [
+    { required: true, message: t('validateDescription'), trigger: ["change"] },
+    { validator: validateDescription(t) as (rule: any, value: any, callback: any) => void, trigger: ["change"] }
+  ]
+});
+
 
 const submitForm = (formEl: any) => {
   if (!formEl) return
@@ -267,6 +272,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+
 ::v-deep .el-form-item__content {
   align-items: center;
   display: flex;

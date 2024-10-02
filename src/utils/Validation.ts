@@ -8,10 +8,10 @@ export const validateCode = (t: (key: string) => string) => {
         (rule: any, value: string, callback: (error?: Error) => void): void => {
             if (value.trim() === '') {
                 callback(new Error(t('validateCode')));
-            } else if (value.length < 6 || value.length > 8) {
+            } else if (value.trim().length < 6 || value.trim().length > 8) {
                 callback(new Error(t('validateCodeLength')));
             } else {
-                if (!patternCode.test(value)) {
+                if (!patternCode.test(value.trim())) {
                     callback(new Error(t('validateCodePattern')));
                 } else {
                     callback();
@@ -27,10 +27,10 @@ export const validateName = (t: (key: string) => string) => {
         (rule: any, value: string, callback: (error?: Error) => void): void => {
             if (value.trim() === '') {
                 callback(new Error(t('validateName')));
-            } else if (value.length > 255) {
+            } else if (value.trim().length > 255) {
                 callback(new Error(t('validateNameLength')));
             } else {
-                if (!patternName.test(value)) {
+                if (!patternName.test(value.trim())) {
                     callback(new Error(t('validateNamePattern')));
                 } else {
                     callback();
@@ -47,7 +47,7 @@ export const validateDescription = (t: (key: string) => string) => {
         (rule: any, value: string, callback: (error?: Error) => void): void => {
             if (value.trim() === '') {
                 callback(new Error(t('validateDescription')));
-            } else if (value.length > 255) {
+            } else if (value.trim().length > 255) {
                 callback(new Error(t('validateDescriptionLength')));
             } else {
                 callback();
@@ -93,16 +93,16 @@ export const validateQuantity = (t: (key: string) => string) => {
     );
 };
 
-export const validateCategory = (t: (key: string) => string) => {
-    return useDebounceFn(
-        (rule: any, value: string[], callback: (error?: Error) => void): void => {
-            console.log(value)
-            if (!value || value.length === 0) {
-                return callback(new Error(t('validateCategoryRequired')));
-            }
-            callback();
-        },
-        300
-    );
-};
+// export const validateCategory = (t: (key: string) => string) => {
+//     return useDebounceFn(
+//         (rule: any, value: string[], callback: (error?: Error) => void): void => {
+//             console.log(value)
+//             if (!value || value.length === 0) {
+//                 return callback(new Error(t('validateCategoryRequired')));
+//             }
+//             callback();
+//         },
+//         300
+//     );
+// };
 

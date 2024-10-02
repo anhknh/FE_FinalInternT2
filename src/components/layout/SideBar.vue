@@ -2,15 +2,8 @@
   <el-aside class="sidebar">
     <el-menu :default-active="activeMenu" class="sidebar-menu">
       <div class="logo">
-        <span style="width: 100%; text-align: center; line-height: 36px">KNHA</span>
+        <span style="width: 100%; text-align: center; line-height: 36px; color: #fff">KNHA</span>
       </div>
-
-      <el-menu-item index="1" @click="handleMenuClick('1', 'Dashboard')">
-        <el-icon>
-          <HomeFilled />
-        </el-icon>
-        <span>{{t('dashboard')}}</span>
-      </el-menu-item>
 
       <el-menu-item index="2" @click="handleMenuClick('2', 'Categories')">
         <el-icon>
@@ -24,27 +17,6 @@
           <Box />
         </el-icon>
         <span>{{t('products')}}</span>
-      </el-menu-item>
-
-      <el-menu-item index="4" @click="handleMenuClick('4', 'Order')">
-        <el-icon>
-          <ShoppingCartFull />
-        </el-icon>
-        <span>{{t('order')}}</span>
-      </el-menu-item>
-
-      <el-menu-item index="5" @click="handleMenuClick('5', 'Customers')">
-        <el-icon>
-          <User />
-        </el-icon>
-        <span>{{t('customers')}}</span>
-      </el-menu-item>
-
-      <el-menu-item index="6" @click="handleMenuClick('6', 'Setting')">
-        <el-icon>
-          <Setting />
-        </el-icon>
-        <span>{{t('setting')}}</span>
       </el-menu-item>
     </el-menu>
   </el-aside>
@@ -92,7 +64,7 @@ onMounted(() => {
 }
 
 .sidebar {
-  background-color: #ffffff;
+  background-color: #172554;
   border-right: 1px solid #ebeef5;
   height: 100vh; /* Chiều cao cố định bằng chiều cao của màn hình */
 }
@@ -100,13 +72,14 @@ onMounted(() => {
 .sidebar-menu {
   height: 100%; /* Đảm bảo menu chiếm toàn bộ chiều cao của sidebar */
   border-right: 1px solid #ebeef5;
-  background-color: #ffffff;
+  background-color: #0d1638;
 }
 
 .el-menu-item {
   padding: 12px 20px;
   display: flex;
   align-items: center; /* Căn chỉnh icon và văn bản theo chiều dọc */
+  color: #fff;
 }
 
 .el-menu-item i {
@@ -116,12 +89,17 @@ onMounted(() => {
 }
 
 .el-menu-item:hover {
-  background-color: #f5f7fa; /* Màu nền khi hover */
+  background-color: #202D3D; /* Màu nền khi hover */
+  color: #ccc;
 }
 
-.el-menu-item.is-active {
+.el-menu-item.is-active  {
   background-color: #409eff ; /* Màu nền khi mục menu đang hoạt động */
   color: #fff; /* Màu văn bản khi mục menu đang hoạt động */
+}
+
+.el-menu-item.is-active i {
+  color: #fff; /* Màu biểu tượng */
 }
 
 

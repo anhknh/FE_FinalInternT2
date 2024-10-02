@@ -5,7 +5,7 @@ import { Composer } from 'vue-i18n'; // Thêm kiểu Composer để khai báo t
 
 class ApiService {
     private axiosInstance: AxiosInstance;
-    private static readonly BASE_URL: string = ' http://192.168.1.10:8081';
+    private static readonly BASE_URL: string = ' http://192.168.1.3:8081';
     private static readonly TIMEOUT: number = 5000; // Thời gian timeout (ms)
     private t: Composer['t']; // Khai báo hàm t với kiểu đúng
 
@@ -43,9 +43,6 @@ class ApiService {
                 } else if (!error.response) {
                     // Xử lý lỗi không kết nối được (backend tắt)
                     NotificationCustom.error(this.t('errorConnect'), this.t('error'));
-                } else {
-                    // Xử lý lỗi từ server
-                    NotificationCustom.error(this.t('errorServer'), this.t('error'));
                 }
                 return Promise.reject(error);
             }

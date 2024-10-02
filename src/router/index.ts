@@ -11,7 +11,7 @@ import FormControlPage from "@/components/category/FormControlPage.vue";
 const routes = [
     {
         path:'/',
-        redirect:'/home',
+        redirect:'/category',
     },
     {
         path: '/home',
