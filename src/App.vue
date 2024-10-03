@@ -5,7 +5,7 @@
         <side-bar></side-bar>
       </el-aside>
       <el-container>
-        <el-header style="position: fixed; width: 100%; z-index: 100;">
+        <el-header style="position: fixed; width: calc(100% - 240px); z-index: 1000">
           <header-page></header-page>
         </el-header>
         <el-main style="padding: 80px 25px 0; height: 100vh">

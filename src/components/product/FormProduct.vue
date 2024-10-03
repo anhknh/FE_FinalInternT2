@@ -326,12 +326,10 @@ onBeforeUnmount(() => {
                     <div class="category-value">{{formData.modifiedBy}}</div>
                   </div>
                 </div>
-
               </div>
             </div>
           </el-form-item>
         </div>
-
         <div style="flex: 2; padding: 8px">
           <div style="display: flex">
             <div style="flex: 1; padding-right: 8px">
